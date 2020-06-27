@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os
 import pickle
+from datetime import datetime
 
 from pymongo import MongoClient as mc
 myclient = mc("mongodb://localhost:27017/")
@@ -15,6 +16,7 @@ dirname = os.path.dirname(__file__) + '/known_people'
 
 known_face_encodings = []
 known_face_names = []
+known_face_uids = []
 
 cursor = col.find()
 len = col.find().count()
@@ -23,6 +25,7 @@ for i in range(len):
     a = pickle.loads(cursor[i]['photo'])
     known_face_encodings.append(a)
     known_face_names.append(cursor[i]['name'])
+    known_face_uids.append(cursor[i]['uid'])
 
     # known_face_names.append(cursor[i]['name'].replace(dirname,'')[1:-4])
 
@@ -58,6 +61,7 @@ while True:
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
+                uid = known_face_uids[best_match_index]
 
             face_names.append(name)
 
@@ -76,6 +80,13 @@ while True:
         
         if name != 'Unknown':
             name = name[:-4].replace(dirname, '')[1:]
+            cursor = col.find({'uid': f"""{uid}"""})
+            time = str(datetime.now())[:-7]
+            if time not in cursor[0]['time']:
+                col.update_one({'uid': uid}, {'$push': {'time': time}})
+                print(name +' появился в: '+ time)
+
+
 
         # Draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (133, 133, 133), 2)

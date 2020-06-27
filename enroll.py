@@ -4,6 +4,7 @@ import string
 import random
 from bson.binary import Binary
 import pickle
+from datetime import datetime
 
 from pymongo import MongoClient as mc
 myclient = mc("mongodb://localhost:27017/")
@@ -32,7 +33,8 @@ while i < 2:
         encoding = (globals()['image_encoding_{}'.format(i)])
         uid = keygen(16)
         name = names[i]
-        db.faces.insert_one({"uid": f"""{uid}""", "name": f"""{name}""", "photo": Binary(pickle.dumps(encoding))})
+        time = datetime.now()
+        db.faces.insert_one({"uid": f"""{uid}""", "name": f"""{name}""", "time": [f"""{str(time)[:-7]}"""], "photo": Binary(pickle.dumps(encoding))})
         i += 1
         if i == 2:
             i = 0
