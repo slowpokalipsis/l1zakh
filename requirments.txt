@@ -1,0 +1,7 @@
+cmake
+face_recognition
+numpy
+dlib
+opencv-python
+pymongo
+sqlparse==0.2.4
