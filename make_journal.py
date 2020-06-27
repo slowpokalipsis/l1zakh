@@ -16,6 +16,7 @@ for i in range(len):
 
 # print(times)
 with open('jrnl.txt', 'w') as inp:
+    print('Журнал посещений!', file = inp)
     for i in times:
         print('\n','User name: '+ i, file=inp)
         print('First added: ' + times[i][0], file=inp)
